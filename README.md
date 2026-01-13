@@ -1,4 +1,5 @@
-**UART**
+****UART****
+
 designed uart transmitter which can send the data at a speed of 1156000 symbols per seconds (baud_rate = 1156000).
 Txclock = 50Mhz Tperiod = 20ns & data_width = 8bitswe calculate the error missmatch it is of +0.59% for Tx.
 
