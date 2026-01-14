@@ -1,6 +1,6 @@
 // Txclock = 50Mhz Tperiod = 20ns & data_width = 8bits & baud_rate is 1156000
 // we calculate the error missmatch it is of +0.59% for Tx 
-// we calculate the Rx error missmatch to both added have to be less than 2%
+// we calculate the Rx error missmatch to both combined have to be less than 2%
 // so we choose 16x oversampling at Rx and clock Rx is 75Mhz Tperiod = 13.3ns
 // the error missmatch at Rx side is -0.78% so, |+0.59%| + |-0.78%| = 1.37% < 2% ...// 
 
@@ -41,7 +41,7 @@ module transmitter#(parameter int  BAUD_RATE = 1156000,
 	       baud_tick <= 1'b1;
 	       baud_count <= {DIV_WIDTH{1'b0}};
   	   end else begin
-	       baud_count <= baud_count + 1;
+	       baud_count <= baud_count + 1'b1;
 	       baud_tick <= 1'b0;
            end 
         end
@@ -67,25 +67,27 @@ module transmitter#(parameter int  BAUD_RATE = 1156000,
 	   START : begin
 	      tx_out <= 1'b0;
 	      tx_shift_reg <= data;
-	      if(baud_count == BAUD_DIV-3) state <= DATA; // start bit time will be 40 clock cycles
+	      if(baud_count == BAUD_DIV) state <= DATA; // start bit time will be 40 clock cycles
               else state <= START;
            end // start
 
 	   DATA : begin
 	      if(baud_tick) begin
-	         tx_out <= tx_shift_reg[0]; // each data bit time is 43 clock cycles 
-                 tx_shift_reg <= tx_shift_reg >> 1;
-		 bit_count <= bit_count + 1;
-		 if(bit_count == DATA_WIDTH) begin  
-                    state <= STOP;
-		    bit_count <= {BIT_COUNT{1'b0}};
-                 end else state <= DATA;
+		  	if(bit_count == DATA_WIDTH) begin  
+            	state <= STOP;
+		    	bit_count <= {BIT_COUNT{1'b0}};
+            end else begin
+		    	state <= DATA;
+		    	tx_out <= tx_shift_reg[0]; // each data bit time is 43 clock cycles 
+           		tx_shift_reg <= tx_shift_reg >> 1;
+		    	bit_count <= bit_count + 1'b1;
+		 	end
 	      end 	
  	   end // data
 
 	   STOP : begin
 	      tx_out <= 1'b1;
-	      if(baud_count == BAUD_DIV-3) state <= IDLE;
+	      if(baud_count == BAUD_DIV) state <= IDLE;
               else state <= STOP;	
            end // stop
 	endcase
