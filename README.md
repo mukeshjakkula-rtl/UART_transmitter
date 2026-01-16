@@ -1,17 +1,39 @@
-****UART_transmitter****
+**UART Transmitter**
 
-Designed uart transmitter which can send the data at a speed of 1156000 symbols per seconds (baud_rate = 1156000).
-Txclock = 50Mhz Tperiod = 20ns & data_width = 8bitswe calculate the error missmatch it is of +0.59% for Tx.
+This project implements a UART transmitter capable of sending serial data at a target baud rate of 1,156,000 symbols/second.
 
-1/1156000 = 865.05ns is the time for each bit to stay on the tx_out line.
+Design Parameters
 
-so accoding to the 50Mhz clock 50Mhz/1156000 = ~43 so each bit has to stay 43 clock cycles in tx_out line for 50Mhz clock.
+TX clock frequency: 50 MHz
 
-so the actual baudrate is 50Mhz/43 = 1162790.
+Clock period: 20 ns
 
-so the error between the intended baudrate and the generated baudrate is:
+Data width: 8 bits
 
-                 (1156000 - 1162790)/1156000 = +0.59% (good < 1%)
+Target baud rate: 1,156,000 bps
+
+Bit Timing Calculation
+
+The ideal time for one UART bit is:
+
+1 / 1,156,000 ≈ 865.05 ns
 
 
-error of missmatch: 
+With a 50 MHz clock:
+
+50 MHz / 1,156,000 ≈ 43
+
+
+Therefore, each bit is held on the tx_out line for 43 clock cycles.
+
+Actual Generated Baud Rate
+Actual baud rate = 50 MHz / 43 ≈ 1,162,790 bps
+
+Baud Rate Error Analysis
+
+The percentage mismatch between the intended and generated baud rates is:
+
+(1,162,790 − 1,156,000) / 1,156,000 = +0.59%
+
+
+A baud rate error of +0.59% is well within acceptable UART limits (typically < 1%), ensuring reliable data transmission.
